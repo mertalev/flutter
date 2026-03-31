@@ -49,6 +49,12 @@ class CanvasImage final : public RefCountedDartWrappable<CanvasImage> {
                                         int32_t pixel_format,
                                         Dart_Handle raw_image_handle);
 
+  static void createFromTexture(int64_t texture_id,
+                                int32_t width,
+                                int32_t height,
+                                bool freeze,
+                                Dart_Handle raw_image_handle);
+
   Dart_Handle toByteData(int format, Dart_Handle callback);
 
   void dispose();

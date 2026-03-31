@@ -120,7 +120,7 @@ class DlImage : public SkRefCnt {
   ///             image.
   virtual std::optional<std::string> get_error() const;
 
-  bool Equals(const DlImage* other) const {
+  virtual bool Equals(const DlImage* other) const {
     if (!other) {
       return false;
     }

@@ -7,6 +7,7 @@
 #include "tonic/logging/dart_invoke.h"
 
 #if IMPELLER_SUPPORTS_RENDERING
+#include "flutter/lib/ui/painting/display_list_texture_registry.h"
 #include "flutter/lib/ui/painting/image_encoding_impeller.h"
 #include "flutter/lib/ui/painting/pixel_deferred_image_gpu_impeller.h"
 #endif
@@ -165,6 +166,41 @@ void CanvasImage::decodeImageFromPixelsSync(Dart_Handle pixels_handle,
   if (error) {
     Dart_ThrowException(tonic::ToDart(error));
   }
+}
+
+void CanvasImage::createFromTexture(int64_t texture_id,
+                                    int32_t width,
+                                    int32_t height,
+                                    bool freeze,
+                                    Dart_Handle raw_image_handle) {
+  auto* dart_state = UIDartState::Current();
+  if (!dart_state) {
+    Dart_ThrowException(tonic::ToDart("Unable to access Dart state."));
+    return;
+  }
+
+  if (!dart_state->IsImpellerEnabled()) {
+    Dart_ThrowException(
+        tonic::ToDart("createImageFromTexture requires Impeller."));
+    return;
+  }
+
+  if (width <= 0 || height <= 0) {
+    Dart_ThrowException(tonic::ToDart("Image dimensions must be positive."));
+    return;
+  }
+
+#if IMPELLER_SUPPORTS_RENDERING
+  auto snapshot_delegate = dart_state->GetSnapshotDelegate();
+  auto raster_task_runner = dart_state->GetTaskRunners().GetRasterTaskRunner();
+
+  auto result_image = CanvasImage::Create();
+  auto dl_image = DlImageTextureRegistry::Make(
+      texture_id, DlISize(width, height), freeze, std::move(snapshot_delegate),
+      std::move(raster_task_runner));
+  result_image->set_image(dl_image);
+  result_image->AssociateWithDartWrapper(raw_image_handle);
+#endif  // IMPELLER_SUPPORTS_RENDERING
 }
 
 }  // namespace flutter

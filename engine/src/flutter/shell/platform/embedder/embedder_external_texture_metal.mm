@@ -135,6 +135,17 @@ sk_sp<DlImage> EmbedderExternalTextureMetal::ResolveTexture(int64_t texture_id,
 }
 
 // |flutter::Texture|
+sk_sp<DlImage> EmbedderExternalTextureMetal::GetTextureImage(PaintContext& context,
+                                                             const DlRect& bounds,
+                                                             bool freeze) {
+  if (last_image_ == nullptr) {
+    last_image_ = ResolveTexture(Id(), context.gr_context, context.aiks_context,
+                                 SkISize::Make(bounds.GetWidth(), bounds.GetHeight()));
+  }
+  return last_image_;
+}
+
+// |flutter::Texture|
 void EmbedderExternalTextureMetal::OnGrContextCreated() {}
 
 // |flutter::Texture|

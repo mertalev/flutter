@@ -2787,6 +2787,48 @@ external void _decodeImageFromPixelsSync(
   _Image outImage,
 );
 
+/// Creates an [Image] from a texture registered with the engine's texture
+/// registry.
+///
+/// The [textureId] must correspond to a texture previously registered via the
+/// platform's texture registry (e.g., FlutterTextureRegistry on iOS,
+/// TextureRegistry on Android).
+///
+/// The [width] and [height] specify the dimensions of the resulting image.
+///
+/// When [freeze] is true (the default), the image captures a snapshot of the
+/// texture content. When [freeze] is false, the image re-resolves from the
+/// texture registry on every frame, reflecting the latest content. This is
+/// suitable for live sources like camera or video.
+///
+/// A non-frozen image does not trigger repaints automatically. The caller
+/// is responsible for scheduling frames (e.g., via [AnimationController]).
+///
+/// This function returns an [Image] immediately. The underlying texture is
+/// resolved on the raster thread when the image is first drawn.
+///
+/// Throws an exception if the texture source image could not be created (e.g.,
+/// Impeller is not enabled).
+Image createImageFromTexture(
+  int textureId, {
+  required int width,
+  required int height,
+  bool freeze = true,
+}) {
+  final image = Image._(_Image._(), width, height);
+  _createImageFromTexture(textureId, width, height, freeze, image._image);
+  return image;
+}
+
+@Native<Void Function(Int64, Int32, Int32, Bool, Handle)>(symbol: 'Image::createFromTexture')
+external void _createImageFromTexture(
+  int textureId,
+  int width,
+  int height,
+  bool freeze,
+  _Image outImage,
+);
+
 /// Determines the winding rule that decides how the interior of a [Path] is
 /// calculated.
 ///

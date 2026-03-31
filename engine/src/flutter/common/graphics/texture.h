@@ -8,6 +8,7 @@
 #include <map>
 
 #include "flutter/display_list/dl_canvas.h"
+#include "flutter/display_list/image/dl_image.h"
 #include "flutter/fml/macros.h"
 #include "flutter/fml/synchronization/waitable_event.h"
 
@@ -51,6 +52,16 @@ class Texture : public ContextListener {
                      const DlRect& bounds,
                      bool freeze,
                      const DlImageSampling sampling) = 0;
+
+  // Called from raster thread.
+  // Returns the texture's image directly without drawing to a canvas.
+  // Platforms that support zero-copy extraction should override this.
+  // Returns nullptr by default, signaling the caller to use Paint instead.
+  virtual sk_sp<DlImage> GetTextureImage(PaintContext& context,
+                                         const DlRect& bounds,
+                                         bool freeze) {
+    return nullptr;
+  }
 
   // Called on raster thread.
   virtual void MarkNewFrameAvailable() = 0;

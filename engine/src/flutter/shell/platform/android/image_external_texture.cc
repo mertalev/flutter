@@ -53,6 +53,20 @@ void ImageExternalTexture::Paint(PaintContext& context,
 }
 
 // Implementing flutter::Texture.
+sk_sp<DlImage> ImageExternalTexture::GetTextureImage(PaintContext& context,
+                                                     const DlRect& bounds,
+                                                     bool freeze) {
+  if (state_ == AttachmentState::kDetached) {
+    return nullptr;
+  }
+  Attach(context);
+  if (!freeze) {
+    ProcessFrame(context, ToSkRect(bounds));
+  }
+  return dl_image_;
+}
+
+// Implementing flutter::Texture.
 void ImageExternalTexture::MarkNewFrameAvailable() {
   // NOOP.
 }

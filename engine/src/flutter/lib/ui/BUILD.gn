@@ -195,6 +195,8 @@ source_set("ui") {
     sources += [
       "painting/display_list_deferred_image_gpu_impeller.cc",
       "painting/display_list_deferred_image_gpu_impeller.h",
+      "painting/display_list_texture_registry.cc",
+      "painting/display_list_texture_registry.h",
       "painting/image_decoder_impeller.cc",
       "painting/image_decoder_impeller.h",
       "painting/image_encoding_impeller.cc",
@@ -312,8 +314,10 @@ if (enable_unittests) {
     sources = []
 
     if (impeller_supports_rendering) {
-      sources +=
-          [ "painting/display_list_deferred_image_gpu_impeller_unittests.cc" ]
+      sources += [
+        "painting/display_list_deferred_image_gpu_impeller_unittests.cc",
+        "painting/display_list_texture_registry_unittests.cc",
+      ]
     }
 
     deps = [

@@ -92,6 +92,11 @@ class ImageExternalTexture : public flutter::Texture {
              bool freeze,
              const DlImageSampling sampling) override;
 
+  // |flutter::Texture|
+  sk_sp<DlImage> GetTextureImage(PaintContext& context,
+                                 const DlRect& bounds,
+                                 bool freeze) override;
+
   // |flutter::Texture|.
   void MarkNewFrameAvailable() override;
 
